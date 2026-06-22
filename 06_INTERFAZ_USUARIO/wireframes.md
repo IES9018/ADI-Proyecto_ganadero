@@ -15,7 +15,8 @@ Wireframe
 |  ¿Olvidó su contraseña?          |
 +----------------------------------+
 Flujo 
-```Mermaid
+
+```mermaid
 sequenceDiagram
 actor Usuario
 participant UI
