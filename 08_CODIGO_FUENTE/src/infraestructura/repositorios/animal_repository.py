@@ -1,37 +1,18 @@
-from infraestructura.persistencia.database import SessionLocal
-from infraestructura.persistencia.models.animal_model import AnimalModel
+from src.dominio.entidades.animal import Animal
 
+class RepositorioAnimal:
 
-class AnimalRepository:
+    _instance = None
+    _data = []
 
-    def obtener_todos(self):
-        session = SessionLocal()
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
-        try:
-            return session.query(AnimalModel).all()
+    def guardar(self, animal: Animal):
+        self._data.append(animal)
+        return animal
 
-        finally:
-            session.close()
-
-    def obtener_por_id(self, id_animal):
-        session = SessionLocal()
-
-        try:
-            return (
-                session.query(AnimalModel)
-                .filter(AnimalModel.id_animal == id_animal)
-                .first()
-            )
-
-        finally:
-            session.close()
-
-    def guardar(self, animal):
-        session = SessionLocal()
-
-        try:
-            session.add(animal)
-            session.commit()
-
-        finally:
-            session.close()
+    def listar(self):
+        return self._data

@@ -1,16 +1,15 @@
 from src.aplicacion.casos_de_uso.gestionar_animal import GestionarAnimal
 
-
 def test_crear_animal():
 
-    servicio = GestionarAnimal()
+    service = GestionarAnimal()
 
-    animal = servicio.crear_animal(
-        "BOV001",
+    animal = service.crear_animal(
+        "BOV002",
         "Bovino",
         "Angus",
-        3,
+        2,
         "sano"
     )
 
-    assert animal.codigo_identificacion == "BOV001"
+    assert animal.codigo_identificacion == "BOV002"

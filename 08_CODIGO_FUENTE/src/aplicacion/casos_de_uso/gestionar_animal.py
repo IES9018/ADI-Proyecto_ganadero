@@ -1,12 +1,15 @@
+from src.dominio.entidades.animal import Animal
+from src.infraestructura.repositorios.repositorio_animal import RepositorioAnimal
 from datetime import date
-from dominio.entidades.animal import Animal
 
+repo = RepositorioAnimal()
 
 class GestionarAnimal:
 
-    def crear_animal(self, repo, codigo, especie, raza, edad, estado):
+    def crear_animal(self, codigo, especie, raza, edad, estado):
+
         animal = Animal(
-            id_animal=None,
+            id_animal=len(repo.listar()) + 1,
             codigo_identificacion=codigo,
             especie=especie,
             raza=raza,
@@ -17,8 +20,5 @@ class GestionarAnimal:
 
         return repo.guardar(animal)
 
-    def listar_animales(self, repo):
+    def listar_animales(self):
         return repo.listar()
-
-    def obtener_animal(self, repo, id_animal):
-        return repo.obtener_por_id(id_animal)
