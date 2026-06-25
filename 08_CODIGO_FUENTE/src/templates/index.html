@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ganadapp</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="topbar">
+    <h2>Ganadapp</h2>
+
+    <div class="menu">
+        <button onclick="showModule('dashboard')">Inicio</button>
+        <button onclick="showModule('animales')">Animales</button>
+        <button onclick="showModule('sanidad')">Sanidad</button>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="module">
+
+    <h1>Ganadapp: Gestión Inteligente de Ganado</h1>
+    <p>Centralice el control de su hacienda</p>
+
+    <div class="grid">
+
+        <div class="card" onclick="showModule('animales')">
+            <h3>Animales</h3>
+            <p>Gestión de ganado</p>
+        </div>
+
+        <div class="card" onclick="showModule('sanidad')">
+            <h3>Vacunación</h3>
+            <p>Control sanitario</p>
+        </div>
+
+        <div class="card">
+            <h3>Stock</h3>
+            <p>Insumos (futuro)</p>
+        </div>
+
+        <div class="card">
+            <h3>Reportes</h3>
+            <p>Estadísticas (futuro)</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODULO ANIMALES -->
+<div id="animales" class="module hidden">
+
+    <h2>Gestión de Animales</h2>
+
+    <input id="codigo" placeholder="Código">
+    <input id="especie" placeholder="Especie">
+    <input id="raza" placeholder="Raza">
+    <input id="edad" type="number" placeholder="Edad">
+    <input id="estado" placeholder="Estado">
+
+    <button onclick="guardarAnimal()">Guardar / Actualizar</button>
+
+    <button onclick="listar()">Actualizar lista</button>
+
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Código</th>
+                <th>Especie</th>
+                <th>Raza</th>
+                <th>Edad</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody id="lista"></tbody>
+    </table>
+</div>
+
+<!-- MODULO SANIDAD -->
+<div id="sanidad" class="module hidden">
+
+    <h2>Módulo Sanitario</h2>
+
+    <p>Seleccione un animal desde la lista para ver su historial</p>
+
+    <div id="sanidadPanel">
+        <p>Sin animal seleccionado</p>
+    </div>
+
+</div>
+
+<script>
+
+let animalEditandoId = null;
+let animalSeleccionadoSanidad = null;
+
+/* ---------------------------
+   NAVEGACIÓN ENTRE MÓDULOS
+----------------------------*/
+
+function showModule(moduleId) {
+
+    document.querySelectorAll('.module').forEach(m => {
+        m.classList.add('hidden');
+    });
+
+    document.getElementById(moduleId).classList.remove('hidden');
+}
+
+/* ---------------------------
+   CRUD ANIMALES
+----------------------------*/
+
+function getFormData() {
+    return {
+        codigo: document.getElementById("codigo").value,
+        especie: document.getElementById("especie").value,
+        raza: document.getElementById("raza").value,
+        edad: document.getElementById("edad").value,
+        estado: document.getElementById("estado").value
+    };
+}
+
+async function guardarAnimal() {
+
+    const data = getFormData();
+
+    if (animalEditandoId === null) {
+
+        await fetch("/animales", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+    } else {
+
+        await fetch(`/animales/${animalEditandoId}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+        animalEditandoId = null;
+    }
+
+    listar();
+}
+
+async function listar() {
+
+    const res = await fetch("/animales");
+    const data = await res.json();
+
+    document.getElementById("lista").innerHTML = data.map(a => `
+        <tr>
+            <td>${a.id}</td>
+            <td>${a.codigo}</td>
+            <td>${a.especie}</td>
+            <td>${a.raza}</td>
+            <td>${a.edad}</td>
+            <td>${a.estado}</td>
+            <td>
+                <button onclick='editar(${JSON.stringify(a)})'>Editar</button>
+                <button onclick='verSanidad(${a.id})'>Sanidad</button>
+                <button onclick="eliminar(${a.id})">Eliminar</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function editar(animal) {
+    animalEditandoId = animal.id;
+
+    document.getElementById("codigo").value = animal.codigo;
+    document.getElementById("especie").value = animal.especie;
+    document.getElementById("raza").value = animal.raza;
+    document.getElementById("edad").value = animal.edad;
+    document.getElementById("estado").value = animal.estado;
+
+    showModule("animales");
+}
+
+async function eliminar(id) {
+    await fetch(`/animales/${id}`, { method: "DELETE" });
+    listar();
+}
+
+/* ---------------------------
+   SANIDAD INTEGRADA
+----------------------------*/
+
+async function verSanidad(animalId) {
+
+    animalSeleccionadoSanidad = animalId;
+
+    const res = await fetch(`/animales/${animalId}/sanidad`);
+    const data = await res.json();
+
+    document.getElementById("sanidadPanel").innerHTML = `
+
+        <h3>Animal ID: ${animalId}</h3>
+
+        <input id="tipo_evento" placeholder="Tipo evento">
+        <input id="descripcion" placeholder="Descripción">
+        <input id="fecha" type="date">
+
+        <button onclick="crearEvento()">Guardar evento</button>
+
+        <h4>Historial</h4>
+
+        <ul>
+            ${data.map(e => `
+                <li>
+                    ${e.fecha} - ${e.tipo_evento} - ${e.descripcion}
+                    <button onclick="eliminarEvento(${e.id})">X</button>
+                </li>
+            `).join("")}
+        </ul>
+    `;
+
+    showModule("sanidad");
+}
+
+async function crearEvento() {
+
+    const data = {
+        tipo_evento: document.getElementById("tipo_evento").value,
+        descripcion: document.getElementById("descripcion").value,
+        fecha: document.getElementById("fecha").value
+    };
+
+    await fetch(`/animales/${animalSeleccionadoSanidad}/sanidad`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    verSanidad(animalSeleccionadoSanidad);
+}
+
+async function eliminarEvento(id) {
+    await fetch(`/sanidad/${id}`, { method: "DELETE" });
+    verSanidad(animalSeleccionadoSanidad);
+}
+
+/* INIT */
+
+listar();
+showModule("dashboard");
+
+</script>
+
+<style>
+.hidden { display: none; }
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #8b5a2b;
+    color: white;
+}
+
+.menu button {
+    margin-left: 10px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.card {
+    padding: 20px;
+    background: #f3e5d8;
+    cursor: pointer;
+}
+</style>
+
+</body>
+</html>

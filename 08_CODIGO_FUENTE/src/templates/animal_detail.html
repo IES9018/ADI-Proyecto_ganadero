@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Animal</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Detalle del Animal</h1>
+
+    <div id="infoAnimal"></div>
+
+    <h2>Registrar evento sanitario</h2>
+
+    <input id="tipo_evento" placeholder="Tipo de evento">
+    <input id="descripcion" placeholder="Descripción">
+    <input id="fecha" type="date">
+
+    <button onclick="crearEvento()">Guardar evento</button>
+
+    <h2>Historial sanitario</h2>
+
+    <table border="1" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+
+        <tbody id="listaEventos"></tbody>
+    </table>
+
+    <br>
+
+    <button onclick="volver()">Volver</button>
+
+</div>
+
+<script>
+
+const animalId = window.location.pathname.split("/").pop();
+
+async function cargarAnimal() {
+    const res = await fetch("/animales");
+    const data = await res.json();
+
+    const animal = data.find(a => a.id == animalId);
+
+    document.getElementById("infoAnimal").innerHTML = `
+        <p><b>Código:</b> ${animal.codigo}</p>
+        <p><b>Especie:</b> ${animal.especie}</p>
+        <p><b>Raza:</b> ${animal.raza}</p>
+        <p><b>Edad:</b> ${animal.edad}</p>
+        <p><b>Estado:</b> ${animal.estado}</p>
+    `;
+}
+
+async function listarEventos() {
+    const res = await fetch(`/animales/${animalId}/sanidad`);
+    const data = await res.json();
+
+    document.getElementById("listaEventos").innerHTML = data.map(e => `
+        <tr>
+            <td>${e.id}</td>
+            <td>${e.tipo_evento}</td>
+            <td>${e.descripcion}</td>
+            <td>${e.fecha}</td>
+            <td>
+                <button onclick="eliminarEvento(${e.id})">Eliminar</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+async function crearEvento() {
+
+    const data = {
+        tipo_evento: document.getElementById("tipo_evento").value,
+        descripcion: document.getElementById("descripcion").value,
+        fecha: document.getElementById("fecha").value
+    };
+
+    await fetch(`/animales/${animalId}/sanidad`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    listarEventos();
+}
+
+async function eliminarEvento(id) {
+    await fetch(`/sanidad/${id}`, { method: "DELETE" });
+    listarEventos();
+}
+
+function volver() {
+    window.location.href = "/";
+}
+
+cargarAnimal();
+listarEventos();
+
+</script>
+
+</body>
+</html>

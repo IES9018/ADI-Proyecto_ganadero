@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GanadApp</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f3e7d3;
+            color: #3b2f2f;
+        }
+
+        header {
+            background: #6b4f3a;
+            color: white;
+            padding: 10px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            background: #6b4f3a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h2>GanadApp - Gestión Ganadera</h2>
+</header>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>
