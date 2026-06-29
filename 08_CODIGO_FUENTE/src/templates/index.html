@@ -1,104 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Ganadapp</title>
-<link rel="stylesheet" href="/static/estilos.css">
+    <meta charset="UTF-8">
+    <title>Ganadapp</title>
+    <link rel="stylesheet" href="estilos.css">
 </head>
-
 <body>
 
-<!-- B1 HEADER -->
-<header class="b1-header">
-
-    <div class="logo">
-        <img src="/static/img/logo.png" alt="logo">
-        <span>Ganadapp</span>
+<header class="topbar">
+    <div class="logo-container">
+        <img src="src/static/img/logo.png" alt="Logo"> <span>Ganadapp</span>
     </div>
-
-    <nav class="nav">
-        <img src="/static/img/icon-inicio.png">
-        <img src="/static/img/icon-panel.png">
-        <img src="/static/img/icon-productores.png">
-        <img src="/static/img/icon-animales.png">
-        <img src="/static/img/icon-vacunacion.png">
-        <img src="/static/img/icon-stock.png">
-        <img src="/static/img/icon-trazabilidad.png">
-        <img src="/static/img/icon-reportes.png">
+    <nav class="menu">
+        <button><img src="src/static/img/icon-inicio.png"> Inicio</button>
+        <button><img src="src/static/img/icon-panel.png"> Panel Principal</button>
+        <button><img src="src/static/img/icon-productores.png"> Panel de Productores</button>
+        <button><img src="src/static/img/icon-animales.png"> Gestión de Animales</button>
+        <button><img src="src/static/img/icon-vacunacion.png"> Vacunación</button>
+        <button><img src="src/static/img/icon-stock.png"> Stock de Insumos</button>
+        <button><img src="src/static/img/icon-trazabilidad.png"> Trazabilidad</button>
+        <button><img src="src/static/img/icon-reportes.png"> Reportes</button>
     </nav>
-
 </header>
 
-<!-- B2 HERO -->
-<section class="b2-hero">
-
+<section class="hero">
     <div class="hero-content">
         <h1>Ganadapp: Gestión Inteligente de Ganado</h1>
-        <p>Centrale el control de su hacienda, productores, salud y trazabilidad.</p>
-
-        <button onclick="document.getElementById('animales').scrollIntoView()">
-            Ver Animales
-        </button>
+        <p>Centralice el control de su hacienda, productores, salud y trazabilidad.</p>
+        <button class="btn-hero">Ver Animales ></button>
     </div>
-
 </section>
 
-<!-- B3 GRID CARDS -->
-<section class="b3-grid">
+<main class="grid-cards">
+    <div class="card"><h3>Inicio de Sesión</h3><p>Inicie sesión de forma segura del stock y sus productos.</p><button>Abrir</button></div>
+    <div class="card"><h3>Panel Principal</h3><p>Centralice el conoctos, clientes, eventatales depitas.</p><button>Abrir</button></div>
+    <div class="card"><h3>Productores</h3><p>Gestione sus panel de productores y tags.</p><button>Abrir</button></div>
+    <div class="card"><h3>Animales</h3><p>Gestione sus animales animales y razunitados.</p><button>Abrir</button></div>
+    <div class="card"><h3>Vacunación</h3><p>Gestione sus vacunacön y vacunación.</p><button>Abrir</button></div>
+    <div class="card"><h3>Stock Insumos</h3><p>Centalisivs Stock Insumos palleta de Insumos.</p><button>Abrir</button></div>
+    <div class="card"><h3>Trazabilidad</h3><p>Concaine sus trazabilidad y antanetraltarios.</p><button>Abrir</button></div>
+    <div class="card"><h3>Reportes</h3><p>Administre sus reportes y consulte su ri reportes.</p><button>Abrir</button></div>
+</main>
 
-    <div class="card">
-        <img src="/static/img/icon-inicio.png">
-        <h3>Inicio de Sesión</h3>
-        <p>Acceso seguro al sistema</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-panel.png">
-        <h3>Panel Principal</h3>
-        <p>Resumen general del sistema</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-productores.png">
-        <h3>Productores</h3>
-        <p>Gestión de productores</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-animales.png">
-        <h3>Animales</h3>
-        <p>Gestión de ganado</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-vacunacion.png">
-        <h3>Vacunación</h3>
-        <p>Control sanitario</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-stock.png">
-        <h3>Stock Insumos</h3>
-        <p>Gestión de inventario</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-trazabilidad.png">
-        <h3>Trazabilidad</h3>
-        <p>Seguimiento del ganado</p>
-    </div>
-
-    <div class="card">
-        <img src="/static/img/icon-reportes.png">
-        <h3>Reportes</h3>
-        <p>Estadísticas del sistema</p>
-    </div>
-
-</section>
-
-<!-- B4 FOOTER -->
-<footer class="b4-footer">
-    © 2026 Ganadapp - Soluciones de Gestión Ganadera
+<footer>
+    © 2026 Ganadapp - Soluciones de Gestión Ganadera - Todos los derechos reservados
 </footer>
 
 </body>
