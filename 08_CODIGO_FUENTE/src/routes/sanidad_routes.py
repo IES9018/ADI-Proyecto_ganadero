@@ -1,20 +1,29 @@
 from fastapi import APIRouter
-from src.services.sanidad_service import SanidadService
+from services.sanidad_service import SanidadService
 
 router = APIRouter()
+
 service = SanidadService()
 
-
-@router.post("/animales/{animal_id}/sanidad")
-def crear_evento(animal_id: int, data: dict):
-    return service.crear_evento(animal_id, data)
-
-
-@router.get("/animales/{animal_id}/sanidad")
-def listar_eventos(animal_id: int):
-    return service.listar_eventos(animal_id)
+# -----------------------------------
+# OBTENER SANIDAD POR ANIMAL
+# -----------------------------------
+@router.get("/api/animales/{animal_id}/sanidad")
+def get_sanidad(animal_id: int):
+    return service.get_by_animal(animal_id)
 
 
-@router.delete("/sanidad/{evento_id}")
-def eliminar_evento(evento_id: int):
-    return service.eliminar_evento(evento_id)
+# -----------------------------------
+# CREAR EVENTO SANITARIO
+# -----------------------------------
+@router.post("/api/animales/{animal_id}/sanidad")
+def create_sanidad(animal_id: int, data: dict):
+    return service.create(animal_id, data)
+
+
+# -----------------------------------
+# ELIMINAR EVENTO SANITARIO
+# -----------------------------------
+@router.delete("/api/sanidad/{event_id}")
+def delete_sanidad(event_id: int):
+    return service.delete(event_id)

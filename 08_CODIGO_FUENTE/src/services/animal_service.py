@@ -1,4 +1,4 @@
-from src.repositories.animal_repository import AnimalRepository
+from repositories.animal_repository import AnimalRepository
 
 
 class AnimalService:

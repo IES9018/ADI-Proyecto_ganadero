@@ -1,4 +1,4 @@
-from src.repositories.sanidad_repository import SanidadRepository
+from repositories.sanidad_repository import SanidadRepository
 
 
 class SanidadService:

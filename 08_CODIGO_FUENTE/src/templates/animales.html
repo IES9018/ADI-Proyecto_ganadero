@@ -1,285 +1,127 @@
-{% extends "base.html" %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Animales</title>
+<link rel="stylesheet" href="../static/styles.css">
+</head>
 
-{% block title %}Gestión de Animales{% endblock %}
+<body>
 
-{% block content %}
-
-<section class="page-header">
-
-    <h1>Gestión de Animales</h1>
-
-    <p>
-        Alta, edición, eliminación y consulta del ganado registrado.
-    </p>
-
-</section>
-
-<section class="formulario">
-
-    <input
-        type="text"
-        id="codigo"
-        placeholder="Código">
-
-    <input
-        type="text"
-        id="especie"
-        placeholder="Especie">
-
-    <input
-        type="text"
-        id="raza"
-        placeholder="Raza">
-
-    <input
-        type="number"
-        id="edad"
-        placeholder="Edad">
-
-    <input
-        type="text"
-        id="estado"
-        placeholder="Estado">
-
-    <div class="acciones">
-
-        <button onclick="guardarAnimal()">
-
-            Guardar / Actualizar
-
-        </button>
-
-        <button onclick="listar()">
-
-            Actualizar Lista
-
-        </button>
-
-        <button onclick="location.href='/'">
-
-            Volver
-
-        </button>
-
+<header class="topbar">
+    <div class="brand">
+        <img src="../static/img/logo.png" class="logo-main">
+        <span class="brand-name">Ganadapp</span>
     </div>
+</header>
 
-</section>
+<main class="container">
 
-<section>
+<h2>Gestión de Animales</h2>
 
-    <table class="tabla">
+<input id="codigo" placeholder="Código">
+<input id="especie" placeholder="Especie">
+<input id="raza" placeholder="Raza">
+<input id="edad" type="number" placeholder="Edad">
+<input id="estado" placeholder="Estado">
 
-        <thead>
+<button onclick="guardarAnimal()">Guardar</button>
 
-            <tr>
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>ID</th><th>Código</th><th>Especie</th><th>Raza</th><th>Edad</th><th>Estado</th><th>Acciones</th>
+</tr>
+</thead>
 
-                <th>ID</th>
-                <th>Código</th>
-                <th>Especie</th>
-                <th>Raza</th>
-                <th>Edad</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+<tbody id="lista"></tbody>
+</table>
 
-            </tr>
-
-        </thead>
-
-        <tbody id="lista">
-
-        </tbody>
-
-    </table>
-
-</section>
-
-{% endblock %}
-
-{% block extra_js %}
+</main>
 
 <script>
 
-let animalEditandoId = null;
+const API = "/api/animales";
 
-function getFormData(){
+let editandoId = null;
 
-    return{
-
-        codigo:document.getElementById("codigo").value,
-
-        especie:document.getElementById("especie").value,
-
-        raza:document.getElementById("raza").value,
-
-        edad:document.getElementById("edad").value,
-
-        estado:document.getElementById("estado").value
-
-    };
-
-}
-
-function limpiarFormulario(){
-
-    animalEditandoId=null;
-
-    document.getElementById("codigo").value="";
-    document.getElementById("especie").value="";
-    document.getElementById("raza").value="";
-    document.getElementById("edad").value="";
-    document.getElementById("estado").value="";
-
+function getData(){
+return {
+codigo: document.getElementById("codigo").value,
+especie: document.getElementById("especie").value,
+raza: document.getElementById("raza").value,
+edad: Number(document.getElementById("edad").value || 0),
+estado: document.getElementById("estado").value
+};
 }
 
 async function guardarAnimal(){
 
-    const data=getFormData();
+const payload = getData();
 
-    if(animalEditandoId==null){
+if(editandoId === null){
 
-        await fetch("/animales",{
+await fetch(API,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(payload)
+});
 
-            method:"POST",
+}else{
 
-            headers:{
+await fetch(`${API}/${editandoId}`,{
+method:"PUT",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(payload)
+});
 
-                "Content-Type":"application/json"
-
-            },
-
-            body:JSON.stringify(data)
-
-        });
-
-    }
-
-    else{
-
-        await fetch(`/animales/${animalEditandoId}`,{
-
-            method:"PUT",
-
-            headers:{
-
-                "Content-Type":"application/json"
-
-            },
-
-            body:JSON.stringify(data)
-
-        });
-
-    }
-
-    limpiarFormulario();
-
-    listar();
-
+editandoId=null;
 }
+
+listar();
+}
+
 async function listar(){
 
-    const respuesta = await fetch("/animales");
+const res = await fetch(API);
+const data = await res.json();
 
-    const animales = await respuesta.json();
-
-    let html = "";
-
-    animales.forEach(animal => {
-
-        html += `
-
-            <tr>
-
-                <td>${animal.id}</td>
-
-                <td>${animal.codigo}</td>
-
-                <td>${animal.especie}</td>
-
-                <td>${animal.raza}</td>
-
-                <td>${animal.edad}</td>
-
-                <td>${animal.estado}</td>
-
-                <td>
-
-                    <button onclick='editar(${JSON.stringify(animal)})'>
-
-                        Editar
-
-                    </button>
-
-                    <button onclick='location.href="/sanidad/${animal.id}"'>
-
-                        Sanidad
-
-                    </button>
-
-                    <button onclick='eliminarAnimal(${animal.id})'>
-
-                        Eliminar
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
-
-    });
-
-    document.getElementById("lista").innerHTML = html;
-
+document.getElementById("lista").innerHTML = data.map(a => `
+<tr>
+<td>${a.id}</td>
+<td>${a.codigo}</td>
+<td>${a.especie}</td>
+<td>${a.raza}</td>
+<td>${a.edad}</td>
+<td>${a.estado}</td>
+<td>
+<button onclick="editar(${a.id},'${a.codigo}','${a.especie}','${a.raza}',${a.edad},'${a.estado}')">Editar</button>
+<button onclick="location.href='/sanidad?id=${a.id}'">Sanidad</button>
+<button onclick="eliminar(${a.id})">Eliminar</button>
+</td>
+</tr>
+`).join("");
 }
 
-/*=========================================
-    EDITAR
-=========================================*/
+function editar(id,codigo,especie,raza,edad,estado){
 
-function editar(animal){
+editandoId=id;
 
-    animalEditandoId = animal.id;
-
-    document.getElementById("codigo").value = animal.codigo;
-
-    document.getElementById("especie").value = animal.especie;
-
-    document.getElementById("raza").value = animal.raza;
-
-    document.getElementById("edad").value = animal.edad;
-
-    document.getElementById("estado").value = animal.estado;
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
+document.getElementById("codigo").value=codigo;
+document.getElementById("especie").value=especie;
+document.getElementById("raza").value=raza;
+document.getElementById("edad").value=edad;
+document.getElementById("estado").value=estado;
 }
 
-/*=========================================
-    ELIMINAR
-=========================================*/
-
-async function eliminarAnimal(id){
-
-    if(!confirm("¿Eliminar animal?")) return;
-
-    await fetch(`/animales/${id}`, {
-
-        method: "DELETE"
-
-    });
-
-    listar();
-
+async function eliminar(id){
+await fetch(`${API}/${id}`,{method:"DELETE"});
+listar();
 }
-window.onload = function(){
 
-    listar();
-
-};
+document.addEventListener("DOMContentLoaded",listar);
 
 </script>
 
-{% endblock %}
+</body>
+</html>
